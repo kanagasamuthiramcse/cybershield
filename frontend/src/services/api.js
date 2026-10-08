@@ -4,7 +4,7 @@
  */
 
 export function getBaseApiUrl() {
-  // 1. Runtime override in localStorage (useful if deployed frontend needs to target a specific Render backend)
+  // 1. Runtime override in localStorage (configured via Settings page)
   const runtimeUrl = localStorage.getItem('cs_api_url');
   if (runtimeUrl && runtimeUrl.trim()) {
     const clean = runtimeUrl.trim().replace(/\/+$/, '');
@@ -18,7 +18,12 @@ export function getBaseApiUrl() {
     return clean.endsWith('/api') ? clean : `${clean}/api`;
   }
 
-  // 3. Default relative path (for local dev proxy or same-domain deployment)
+  // 3. In browser production environments (e.g. Vercel), target Render backend directly
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://cybershield-backend.onrender.com/api';
+  }
+
+  // 4. Default relative path (for local dev proxy)
   return '/api';
 }
 
