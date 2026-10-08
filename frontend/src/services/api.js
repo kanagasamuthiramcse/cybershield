@@ -13,17 +13,12 @@ export function getBaseApiUrl() {
 
   // 2. Vite environment variable (set in Vercel project settings as VITE_API_URL)
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && envUrl.trim()) {
+  if (envUrl && envUrl.trim() && !envUrl.includes('cybershield-backend.onrender.com')) {
     const clean = envUrl.trim().replace(/\/+$/, '');
     return clean.endsWith('/api') ? clean : `${clean}/api`;
   }
 
-  // 3. In browser production environments (e.g. Vercel), target Render backend directly
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://cybershield-backend.onrender.com/api';
-  }
-
-  // 4. Default relative path (for local dev proxy)
+  // 3. Clean same-origin /api path (works on Vercel serverless and dev proxy)
   return '/api';
 }
 
